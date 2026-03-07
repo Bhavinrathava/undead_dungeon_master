@@ -1,0 +1,319 @@
+"""
+session/session_manager.py
+Orchestrates a single game session.
+
+Responsibilities:
+  - Initialise WorldState from a loaded Adventure (party, starting location)
+  - Build the adventure context string for the DM Agent each turn
+  - Pass player input to DMAgent and return the DM's response
+"""
+
+from __future__ import annotations
+
+import datetime
+import json
+import re
+from pathlib import Path
+
+from ai_dungeon_master.adventure.models import Adventure, Location
+from ai_dungeon_master.agent.dm_agent import DMPersonality
+from ai_dungeon_master.agent.llm_client import LLMClient
+from ai_dungeon_master.agent.orchestrator_agent import OrchestratorAgent, TurnResult
+from ai_dungeon_master.state.world_state import (
+    CombatState,
+    EnemyState,
+    GamePhase,
+    PartyMemberState,
+    WorldState,
+)
+
+
+class SessionManager:
+    """
+    Manages one game session from start to finish.
+
+    Usage:
+        session = SessionManager(adventure, personality=DMPersonality.STORYTELLER)
+        response = session.send("I examine the door carefully.")
+    """
+
+    def __init__(
+        self,
+        adventure: Adventure,
+        personality: DMPersonality = DMPersonality.STORYTELLER,
+    ) -> None:
+        self.adventure = adventure
+        self.world_state = self._init_world_state(adventure)
+        self.llm = LLMClient()
+        self.orchestrator = OrchestratorAgent(self.llm, personality=personality)
+
+        sessions_dir = Path(__file__).parent.parent / "data" / "sessions"
+        sessions_dir.mkdir(parents=True, exist_ok=True)
+        safe_title = re.sub(r"[^\w\-]", "_", adventure.title.lower())
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        self._log_file = sessions_dir / f"{safe_title}_{timestamp}.jsonl"
+
+    # ------------------------------------------------------------------
+    # Initialisation
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _init_world_state(adventure: Adventure) -> WorldState:
+        """Build a fresh WorldState seeded from the Adventure document."""
+        # Convert static PlayerCharacter templates into mutable PartyMemberState
+        party = [
+            PartyMemberState(
+                name=pc.name,
+                character_class=pc.character_class,
+                race=pc.race,
+                level=pc.level,
+                max_hp=pc.max_hp,
+                current_hp=pc.current_hp,
+                ac=pc.ac,
+                attack_bonus=pc.attack_bonus,
+                damage_dice=pc.damage_dice,
+                inventory=list(pc.inventory),
+                spell_slots=dict(pc.spell_slots),
+            )
+            for pc in adventure.party
+        ]
+
+        starting = adventure.starting_location
+        start_id = starting.id if starting else ""
+
+        state = WorldState(
+            adventure_title=adventure.title,
+            phase=GamePhase.EXPLORATION,
+            party=party,
+            current_location_id=start_id,
+            visited_location_ids=[start_id] if start_id else [],
+        )
+        return state
+
+    # ------------------------------------------------------------------
+    # Adventure context assembly
+    # ------------------------------------------------------------------
+
+    def _build_adventure_context(self) -> str:
+        """
+        Produce a concise, LLM-ready description of the adventure and
+        the player's current location.  Re-built each turn so that it
+        always reflects the live world state (e.g. location changes).
+        """
+        adv = self.adventure
+        lines: list[str] = [
+            f"# Adventure: {adv.title}",
+            f"Setting: {adv.setting}",
+            f"Premise: {adv.premise}",
+        ]
+
+        if adv.win_condition:
+            lines.append(f"Win condition: {adv.win_condition}")
+        if adv.fail_condition:
+            lines.append(f"Fail condition: {adv.fail_condition}")
+        if adv.dm_notes:
+            lines += ["", f"DM Notes: {adv.dm_notes}"]
+
+        # Current location detail
+        loc: Location | None = adv.get_location(
+            self.world_state.current_location_id
+        )
+        if loc:
+            lines += [
+                "",
+                f"## Current Location: {loc.name}",
+                loc.description,
+            ]
+
+            if loc.connections:
+                lines.append(f"Connected areas: {', '.join(loc.connections)}")
+
+            if loc.items:
+                lines.append(f"Items present: {', '.join(loc.items)}")
+
+            if loc.lore:
+                lines += ["", "Lore:"]
+                for lore_entry in loc.lore:
+                    lines.append(f"  - {lore_entry}")
+
+            if loc.npcs:
+                lines += ["", "NPCs here:"]
+                for npc in loc.npcs:
+                    npc_line = f"  - {npc.name} ({npc.role}): {npc.personality}"
+                    if npc.dialogue_hints:
+                        npc_line += f". {npc.dialogue_hints}"
+                    lines.append(npc_line)
+
+            if loc.encounters:
+                pending = [
+                    e
+                    for e in loc.encounters
+                    if e.id not in self.world_state.completed_encounter_ids
+                ]
+                if pending:
+                    lines += ["", "Possible encounters:"]
+                    for enc in pending:
+                        lines.append(
+                            f"  - {enc.name} (trigger: {enc.trigger}): {enc.description}"
+                        )
+
+        return "\n".join(lines)
+
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def send(self, player_input: str) -> TurnResult:
+        """
+        Process one player turn.
+
+        Args:
+            player_input: Raw text from the player.
+
+        Returns:
+            TurnResult with the DM's response and optional skill check event.
+        """
+        self.world_state.turn_count += 1
+
+        adventure_context = (
+            self._build_adventure_context()
+        )  # Information about the current location and interactions with NPCs / enemies
+
+        world_state_str = (
+            self.world_state.to_context_string()
+        )  # Infomation about the current party, combat, quests, interactions with the environment
+
+        result = self.orchestrator.orchestrate(
+            player_input=player_input,
+            world_state_str=world_state_str,
+            adventure_context=adventure_context,
+            world_state=self.world_state,
+            adventure=self.adventure,
+        )
+
+        log_entry = {
+            "turn": self.world_state.turn_count,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "player_input": player_input,
+            "steps": result.trace,
+            "dm_response": result.dm_response,
+        }
+        with self._log_file.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(log_entry) + "\n")
+
+        return result
+
+    # ------------------------------------------------------------------
+    # Inventory management
+    # ------------------------------------------------------------------
+
+    def add_item(self, player_name: str, item: str) -> bool:
+        """Give *item* to the named party member.
+
+        Args:
+            player_name: Name of the party member (case-insensitive).
+            item:        Item string to append to their inventory.
+
+        Returns:
+            True on success, False if the player was not found.
+        """
+        return self.world_state.add_to_inventory(player_name, item)
+
+    def remove_item(self, player_name: str, item: str) -> bool:
+        """Remove *item* from the named party member's inventory.
+
+        Matches case-insensitively against the first occurrence.
+
+        Args:
+            player_name: Name of the party member (case-insensitive).
+            item:        Item string to remove.
+
+        Returns:
+            True on success, False if the player or item was not found.
+        """
+        return self.world_state.remove_from_inventory(player_name, item)
+
+    def get_inventory(self, player_name: str) -> list[str] | None:
+        """Return the current inventory list for a party member, or None if not found."""
+        player = self.world_state.get_player(player_name)
+        return list(player.inventory) if player else None
+
+    # ------------------------------------------------------------------
+    # Combat state management
+    # ------------------------------------------------------------------
+
+    def start_combat(
+        self,
+        encounter_id: str,
+        enemies: list[EnemyState] | None = None,
+        turn_order: list[str] | None = None,
+    ) -> None:
+        """Enter combat for the given encounter.
+
+        Args:
+            encounter_id: Unique ID of the encounter being started.
+            enemies:      Enemy instances to fight. Defaults to empty list.
+            turn_order:   Initiative order (list of instance_ids / player names).
+                          Defaults to party names followed by enemy instance_ids.
+        """
+        if self.world_state.in_combat:
+            raise RuntimeError(
+                f"Already in combat with encounter '{self.world_state.combat.encounter_id}'. "
+                "Call end_combat() first."
+            )
+
+        resolved_enemies: list[EnemyState] = enemies or []
+
+        if turn_order is None:
+            party_names = [p.name for p in self.world_state.living_party]
+            enemy_ids = [e.instance_id for e in resolved_enemies]
+            turn_order = party_names + enemy_ids
+
+        combat = CombatState(
+            encounter_id=encounter_id,
+            enemies=resolved_enemies,
+            party=self.world_state.living_party,
+            turn_order=turn_order,
+        )
+        self.world_state.start_combat(combat)
+
+    def end_combat(self) -> None:
+        """End the current combat and return to exploration phase."""
+        if not self.world_state.in_combat:
+            raise RuntimeError("Not currently in combat.")
+        self.world_state.end_combat()
+
+    def toggle_combat(
+        self,
+        encounter_id: str = "",
+        enemies: list[EnemyState] | None = None,
+        turn_order: list[str] | None = None,
+    ) -> bool:
+        """Toggle combat on or off.
+
+        If currently in combat, ends it.
+        If not in combat, starts a new encounter — *encounter_id* is required in that case.
+
+        Returns:
+            True if combat is now active, False if it has just ended.
+        """
+        if self.world_state.in_combat:
+            self.world_state.end_combat()
+            return False
+
+        if not encounter_id:
+            raise ValueError("encounter_id is required to start combat.")
+        self.start_combat(encounter_id, enemies=enemies, turn_order=turn_order)
+        return True
+
+    # ------------------------------------------------------------------
+    # Dunder helpers
+    # ------------------------------------------------------------------
+
+    def __repr__(self) -> str:
+        return (
+            f"SessionManager("
+            f"adventure={self.adventure.title!r}, "
+            f"personality={self.orchestrator.dm_agent.personality.value!r}, "
+            f"turn={self.world_state.turn_count})"
+        )

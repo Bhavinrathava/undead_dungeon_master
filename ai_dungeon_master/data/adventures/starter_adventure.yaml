@@ -1,0 +1,849 @@
+title: "The Medallion of Hodenfort"
+setting: >
+  A grim, low-fantasy world where the roads between towns are dangerous and trust is scarce.
+  The Ninger Brotherhood — a secretive order of elven assassins — operate in the wilderness
+  between settlements, preying on merchants and travelers. The Church of the Undying watches
+  from Hodenfort, its priests serving Morrath, the god of undead. Tone is dark, tense, and
+  grounded. No heroic fanfare — just survival and coin.
+
+premise: >
+  The merchant Damien has hired you to escort a sealed iron medallion from Svengard to
+  Hodenfort. He is tight-lipped about its purpose, saying only that it must reach High Priest
+  Helgen at the Church of the Undying before the new moon. You depart at dawn on an oxcart,
+  the medallion locked in a small iron chest beneath the driver's bench. The road to Hodenfort
+  is two days' travel through open farmland and then dense forest. Damien waves you off from
+  his shop doorway, not meeting your eyes.
+
+win_condition: "The party reaches the Ninger Brotherhood cave hideout."
+fail_condition: "The entire party is killed or the medallion is lost."
+
+dm_notes: >
+  Damien is hiding something — he knows the medallion is being hunted, which is why he hired
+  escorts rather than sending a courier. Do not reveal this unless players press him hard before
+  departure or find the journal in the hideout. Helgen and the Church of the Undying are not
+  villains in this adventure — save that for later. The Ninger elves want the medallion but do
+  not know what it does. Keep pacing tight: Svengard is just a send-off, the road is atmosphere,
+  the ambush is the first real tension, and the hideout is the payoff.
+
+# ---------------------------------------------------------------------------
+# PARTY (default starter party — can be overridden at session start)
+# ---------------------------------------------------------------------------
+
+party:
+  - name: "Aldric"
+    character_class: "Fighter"
+    subclass: "Champion"
+    race: "Human (Variant)"
+    background: "Soldier"
+    alignment: "Lawful Neutral"
+    level: 1
+    max_hp: 24
+    current_hp: 24
+    ac: 18                    # Chain Mail (16) + Shield (+2)
+    speed: 30
+    size: "Medium"
+    initiative: +1            # DEX modifier
+    proficiency_bonus: 2
+    hit_dice: "1d10"
+
+    ability_scores:
+      STR: { score: 16, modifier: +3 }
+      DEX: { score: 12, modifier: +1 }
+      CON: { score: 14, modifier: +2 }
+      INT: { score: 10, modifier: +0 }
+      WIS: { score: 11, modifier: +0 }
+      CHA: { score: 9,  modifier: -1 }
+
+    saving_throws:           # Fighter proficiency: STR and CON
+      STR: { modifier: +5, proficient: true }
+      DEX: { modifier: +1, proficient: false }
+      CON: { modifier: +4, proficient: true }
+      INT: { modifier: +0, proficient: false }
+      WIS: { modifier: +0, proficient: false }
+      CHA: { modifier: -1, proficient: false }
+
+    skills:                  # Proficient skills: Athletics, Intimidation, Perception, Survival
+      Acrobatics:      { modifier: +1, proficient: false }   # DEX
+      Animal_Handling: { modifier: +0, proficient: false }   # WIS
+      Arcana:          { modifier: +0, proficient: false }   # INT
+      Athletics:       { modifier: +5, proficient: true }    # STR
+      Deception:       { modifier: -1, proficient: false }   # CHA
+      History:         { modifier: +0, proficient: false }   # INT
+      Insight:         { modifier: +0, proficient: false }   # WIS
+      Intimidation:    { modifier: +1, proficient: true }    # CHA
+      Investigation:   { modifier: +0, proficient: false }   # INT
+      Medicine:        { modifier: +0, proficient: false }   # WIS
+      Nature:          { modifier: +0, proficient: false }   # INT
+      Perception:      { modifier: +2, proficient: true }    # WIS
+      Performance:     { modifier: -1, proficient: false }   # CHA
+      Persuasion:      { modifier: -1, proficient: false }   # CHA
+      Religion:        { modifier: +0, proficient: false }   # INT
+      Sleight_of_Hand: { modifier: +1, proficient: false }   # DEX
+      Stealth:         { modifier: +1, proficient: false }   # DEX (disadvantage in heavy armour)
+      Survival:        { modifier: +2, proficient: true }    # WIS
+
+    passive_perception: 12   # 10 + Perception modifier
+
+    feats:
+      - name: "Shield Master"
+        source: "Variant Human bonus feat"
+        description: >
+          When you take the Attack action on your turn while wielding a shield, you can use a
+          bonus action to try to shove one creature within 5 ft. (DC 13 STR save or knocked
+          prone / pushed 5 ft.). If a spell or effect deals half damage on a successful DEX
+          save and targets only you, you take no damage on a success and half on a failure.
+
+    class_features:
+      - name: "Fighting Style: Protection"
+        description: >
+          When a creature you can see attacks a target other than you that is within 5 ft. of
+          you, you can use your reaction to impose disadvantage on the attack roll. You must
+          be wielding a shield.
+      - name: "Second Wind"
+        description: >
+          Bonus action: regain 1d10 + 1 HP. Recharges on a short or long rest.
+
+    background_feature: >
+      Military Rank — Former soldiers and garrison troops recognize your rank. You can invoke
+      this to requisition simple equipment or passage through military checkpoints.
+
+    proficiencies:
+      armor:     ["Light Armor", "Medium Armor", "Heavy Armor", "Shields"]
+      weapons:   ["Simple Weapons", "Martial Weapons"]
+      tools:     ["Dice Set", "Vehicles (land)"]
+      languages: ["Common"]
+
+    attacks:
+      - name: "Longsword (one-handed)"
+        attack_bonus: +5
+        damage: "1d8+3"
+        damage_type: "slashing"
+        range: "5 ft. melee"
+      - name: "Longsword (two-handed, no shield)"
+        attack_bonus: +5
+        damage: "1d10+3"
+        damage_type: "slashing"
+        range: "5 ft. melee"
+      - name: "Shield Bash (Shield Master bonus action)"
+        attack_bonus: "—"
+        damage: "Shove only — target makes DC 13 STR save or is knocked prone / pushed 5 ft."
+        damage_type: "bludgeoning"
+        range: "5 ft. melee"
+
+    attack_bonus: 5           # STR mod (+3) + proficiency (+2)
+    damage_dice: "1d8+3"
+
+    equipment:
+      worn:    ["Chain Mail", "Shield"]
+      carried: ["Longsword", "Explorer's Pack"]
+    inventory: ["longsword", "chain mail", "shield", "torch x2", "rations x3", "explorer's pack"]
+
+    personality_traits: "I face problems head-on. A simple, direct solution is the best path to success."
+    ideals: "Responsibility. I do what I must and accept the consequences."
+    bonds: "I fight for those who cannot fight for themselves."
+    flaws: "I have little respect for anyone who is not a proven warrior."
+
+# ---------------------------------------------------------------------------
+# LOCATIONS
+# ---------------------------------------------------------------------------
+
+locations:
+
+  # ---- 1. SVENGARD --------------------------------------------------------
+  - id: "svengard"
+    name: "Svengard"
+    is_starting_location: true
+    description: >
+      A mid-sized market town with low stone walls and muddy streets. The smell of livestock
+      and sawdust hangs in the air. It is early morning — shopkeepers are opening shutters,
+      a dog barks somewhere near the well. Damien's shop sits on the eastern road, a faded
+      painted sign of scales above the door. An oxcart waits outside, the ox already hitched
+      and sullen-looking.
+    connections: ["the_road"]
+    lore:
+      - "Svengard has no standing guard — only a night watchman, Old Petr, who is mostly deaf."
+      - "The eastern road to Hodenfort runs through the Ashfeld forest. Merchants avoid it after dark."
+      - "There have been three missing-merchant reports in the last two months. The town council blames wolves."
+    npcs:
+      - name: "Damien"
+        role: "quest_giver"
+        race: "Human"
+        alignment: "Neutral"
+
+        ability_scores:
+          STR: { score: 9,  modifier: -1 }
+          DEX: { score: 11, modifier: +0 }
+          CON: { score: 12, modifier: +1 }
+          INT: { score: 14, modifier: +2 }
+          WIS: { score: 13, modifier: +1 }
+          CHA: { score: 14, modifier: +2 }
+
+        saving_throws:         # Non-combatant; no class proficiencies
+          STR: { modifier: -1, proficient: false }
+          DEX: { modifier: +0, proficient: false }
+          CON: { modifier: +1, proficient: false }
+          INT: { modifier: +2, proficient: false }
+          WIS: { modifier: +1, proficient: false }
+          CHA: { modifier: +2, proficient: false }
+
+        skills:                # Merchant background: Deception, History, Insight, Persuasion
+          Deception:   { modifier: +4, proficient: true }
+          History:     { modifier: +4, proficient: true }
+          Insight:     { modifier: +3, proficient: true }
+          Persuasion:  { modifier: +4, proficient: true }
+          Perception:  { modifier: +1, proficient: false }
+
+        passive_perception: 11
+
+        personality: "Nervous, businesslike, avoids eye contact. Speaks in short clipped sentences. Pays well but asks no questions."
+        knowledge:
+          - "The medallion must reach Helgen before the new moon — four days from now."
+          - "The iron chest it sits in is locked. He gives the party the key."
+          - "He refuses to say what the medallion does. If pushed hard: 'It's a religious artifact. Helgen will explain.'"
+          - "He has heard rumors of trouble on the eastern road but dismisses them as merchant gossip."
+        dialogue_hints: >
+          Damien speaks quickly and wants the party gone before anyone sees them. He hands over
+          a small iron key and a folded letter of introduction for Helgen. He does not say goodbye.
+        secret:
+          text: >
+            Damien stole the medallion from the Ninger Brotherhood six months ago after finding it
+            in a shipment of goods. He does not know its full power but knows the Brotherhood wants
+            it back. He hired the party as unknowing bait — if the Brotherhood attacks them instead
+            of him, he buys time. There is a coded note in his desk that hints at this, but the
+            party has no reason to search his shop.
+          concealment_reason: "fears retaliation from the Brotherhood if they learn he is talking"
+          reveal_threshold: 15
+          partial_reveal_threshold: 10
+          skill_type: ["persuasion", "intimidation", "insight"]
+          hints:
+            - "goes rigid and changes the subject whenever the Ninger Brotherhood are mentioned"
+            - "glances toward the locked desk drawer when asked about the medallion's origins"
+    encounters: []
+    items: ["iron chest (locked)", "letter of introduction for Helgen"]
+
+  # ---- 2. THE ROAD --------------------------------------------------------
+  - id: "the_road"
+    name: "The Eastern Road"
+    description: >
+      A rutted dirt road cutting through open farmland that slowly gives way to the edge of
+      Ashfeld forest. The oxcart sways and creaks. Crows watch from fence posts. By midday
+      the trees close in on both sides and the light drops. Then, rounding a bend, the party
+      sees it: a merchant's carriage overturned in the ditch, one wheel still spinning slowly.
+      Two dead horses still in their traces. No sign of the driver.
+    connections: ["svengard", "ambush_site"]
+    lore:
+      - "The overturned carriage bears the crest of House Varel — minor cloth merchants out of Hodenfort."
+      - "The carriage has been ransacked. Bolts of cloth are scattered in the mud. A strongbox lies open and empty."
+      - "A successful Perception check (DC 12) reveals elvish bootprints in the soft mud leading north into the trees."
+      - "A successful Investigation check (DC 14) on the carriage finds a crossbow bolt lodged in the driver's bench — slender, black-fletched. Ninger make."
+    encounters: []
+    items: ["scattered cloth bolts (worthless)", "empty strongbox", "black-fletched crossbow bolt (clue)"]
+    npcs: []
+
+  # ---- 3. AMBUSH SITE -----------------------------------------------------
+  - id: "ambush_site"
+    name: "The Ambush"
+    description: >
+      Whether the party stops to investigate the carriage or tries to push past it, the attack
+      comes the same way: two crossbow bolts from the treeline, then silence, then elves
+      dropping from the branches onto the road. They are lean, dressed in dark leather, faces
+      half-masked. The leader calls out in accented Common: "The chest. Leave it and we let
+      you walk." They will not actually let them walk.
+    connections: ["the_road", "forest_trail"]
+    lore:
+      - "The Ninger Brotherhood are elvish mercenaries-turned-thieves who operate across three kingdoms."
+      - "They take contracts for theft and assassination. They do not leave witnesses as a rule."
+      - "The leader, Varek, knows the medallion is in the chest but not what it does. He has orders to retrieve it."
+    encounters:
+      - id: "ninger_ambush"
+        name: "Ninger Brotherhood Ambush"
+        trigger: "on_enter"
+        description: >
+          Four Ninger elves emerge — two from the trees on each side of the road. Varek, the
+          leader, stands in the center. He makes his demand once. If the party refuses or attacks,
+          combat begins immediately. Varek will attempt to flee if reduced to 5 HP or fewer,
+          heading north toward the hideout.
+        success_outcome: >
+          The elves are defeated or driven off. Varek, if not killed, flees into the trees.
+          A trail of blood or footprints leads north — clearly toward something. The road to
+          Hodenfort remains open but the party now knows they are being hunted.
+        failure_outcome: >
+          The party is subdued. The elves take the chest and leave the party bound to a tree.
+          They can attempt to escape (DC 13 Strength or Dexterity check) but the medallion is gone.
+        xp_reward: 200
+        is_optional: false
+        enemies:
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13               # Leather armor (11) + DEX mod (+2) = 13
+            speed: 35
+            size: "Medium"
+            initiative: +3       # DEX modifier
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:       # Rogue proficiency: DEX and INT
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:              # Proficient: Stealth (expertise), Perception, Acrobatics, Sleight of Hand
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }   # DEX (+3) + proficiency (2) + expertise (2)
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "3 crossbow bolts", "5 silver pieces"]
+            description: "A lean elf in dark leather, quick and quiet. Fights dirty."
+
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13
+            speed: 35
+            size: "Medium"
+            initiative: +3
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "3 crossbow bolts", "5 silver pieces"]
+            description: "A lean elf in dark leather, quick and quiet. Fights dirty."
+
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13
+            speed: 35
+            size: "Medium"
+            initiative: +3
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "3 crossbow bolts", "4 silver pieces"]
+            description: "A lean elf in dark leather, quick and quiet. Fights dirty."
+
+          - name: "Varek"
+            role: "Brotherhood Lieutenant"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 18
+            ac: 15               # Studded leather (12) + DEX mod (+4) = 16... or leather (11) + DEX (4) = 15
+            speed: 35
+            size: "Medium"
+            initiative: +4       # DEX modifier
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 11, modifier: +0 }
+              DEX: { score: 18, modifier: +4 }
+              CON: { score: 13, modifier: +1 }
+              INT: { score: 14, modifier: +2 }
+              WIS: { score: 12, modifier: +1 }
+              CHA: { score: 13, modifier: +1 }
+
+            saving_throws:       # Rogue proficiency: DEX and INT
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +6, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +4, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +1, proficient: false }
+
+            skills:              # Expertise: Stealth, Perception | Proficient: Acrobatics, Deception, Insight, Sleight of Hand
+              Acrobatics:      { modifier: +6, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +3, proficient: true }
+              Insight:         { modifier: +3, proficient: true }
+              Intimidation:    { modifier: +1, proficient: false }
+              Investigation:   { modifier: +2, proficient: false }
+              Perception:      { modifier: +5, proficient: true, expertise: true }   # WIS (+1) + prof (2) + expertise (2)
+              Persuasion:      { modifier: +1, proficient: false }
+              Sleight_of_Hand: { modifier: +6, proficient: true }
+              Stealth:         { modifier: +8, proficient: true, expertise: true }   # DEX (+4) + prof (2) + expertise (2)
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 15
+
+            feats:
+              - name: "Dual Wielder"
+                description: >
+                  +1 AC while wielding two melee weapons (reflected in AC above). Can use
+                  two-weapon fighting with weapons that are not light. Can draw or stow two
+                  one-handed weapons in the same interaction.
+
+            attack_bonus: 6
+            damage_dice: "1d6+3"
+            attacks:
+              - name: "Shortsword (main hand)"
+                attack_bonus: +6
+                damage: "1d6+4"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Shortsword (off hand)"
+                attack_bonus: +6
+                damage: "1d6+4"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+                note: "Multiattack — both strikes on his turn"
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 2d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Uncanny Dodge"
+                description: "When an attacker Varek can see hits him, he can use his reaction to halve the damage."
+              - name: "Multiattack"
+                description: "Two shortsword strikes per Attack action (one main hand, one off hand via two-weapon fighting)."
+              - name: "Assassinate"
+                description: >
+                  Advantage on attack rolls against any creature that hasn't taken a turn yet.
+                  Any hit against a surprised creature is a critical hit.
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+
+            damage_type: "piercing"
+            loot: ["two shortswords", "Ninger brotherhood insignia", "12 gold pieces", "encrypted orders (see hideout)"]
+            description: >
+              The Brotherhood leader. Calm and precise. Does not taunt or monologue. Fights to
+              win and retreats when losing — he has done this a hundred times.
+    items: []
+    npcs: []
+
+  # ---- 4. FOREST TRAIL ----------------------------------------------------
+  - id: "forest_trail"
+    name: "The Forest Trail"
+    description: >
+      A narrow path beaten into the undergrowth heading north from the ambush site. It is not
+      a road — more like a route used repeatedly. Broken branches, scuffed bark, a piece of
+      dark cloth caught on a thorn. The trees thicken as the path descends into a shallow
+      ravine. Woodsmoke. Then, at the base of the ravine, a cave mouth framed by stacked
+      stones — deliberately concealed but not concealed enough.
+    connections: ["ambush_site", "ninger_hideout"]
+    lore:
+      - "A Survival check (DC 10) confirms the trail is used regularly — multiple sets of boots, all light-footed."
+      - "The woodsmoke is coming from inside the cave. Someone is still there."
+      - "A Perception check (DC 13) near the cave entrance spots a trip-wire across the path — a warning bell, not a weapon."
+    encounters: []
+    items: ["piece of dark cloth (Ninger)"]
+    npcs: []
+
+  # ---- 5. NINGER HIDEOUT --------------------------------------------------
+  - id: "ninger_hideout"
+    name: "The Ninger Brotherhood Hideout"
+    description: >
+      A cave roughly twenty feet deep, shored up with timber beams. A fire burns low in a
+      stone ring at the center. Bedrolls for six line the walls — only three are occupied by
+      the scouts who stayed behind. Crates of stolen goods are stacked along one wall. On a
+      rough-hewn table near the back: a map, a ledger, and a sealed letter addressed to
+      'V' — Varek. This is the end of the road for now. Whatever is written in that letter,
+      and whatever the medallion truly is, will have to wait.
+    connections: ["forest_trail"]
+    lore:
+      - "The ledger lists six contracts in the last three months — three thefts, two assassinations, one listed only as 'retrieval: M.'"
+      - "The map shows Svengard, Hodenfort, and a third location marked only with a symbol matching the medallion."
+      - "The sealed letter (Varek's orders) reads: 'Retrieve the Morrath seal by any means. Do not open it. Deliver to the Vault.'"
+      - "A hidden compartment under one of the crates contains 40 gold pieces and a vial of black liquid (poison, unidentified)."
+    encounters:
+      - id: "hideout_guards"
+        name: "Hideout Guard Encounter"
+        trigger: "on_enter"
+        description: >
+          Three Ninger scouts are in the cave — one tending the fire, two sleeping. If the party
+          enters quietly (Stealth DC 13), they can get the drop on them. If not, the scouts
+          wake and fight. They will not surrender — Brotherhood discipline.
+        success_outcome: >
+          The guards are defeated. The party has the hideout and everything in it. The adventure
+          ends here — they have uncovered the Brotherhood's base, secured the medallion, and now
+          hold intelligence about whoever sent Varek's orders. The road to Hodenfort still waits.
+        failure_outcome: >
+          The party is overwhelmed and captured. They wake bound inside the cave. A darker path begins.
+        xp_reward: 150
+        is_optional: false
+        enemies:
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13
+            speed: 35
+            size: "Medium"
+            initiative: +3
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "6 silver pieces"]
+            description: "A lean elf in dark leather, caught off-guard."
+
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13
+            speed: 35
+            size: "Medium"
+            initiative: +3
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "4 silver pieces"]
+            description: "A lean elf in dark leather, caught off-guard."
+
+          - name: "Ninger Scout"
+            race: "Elf"
+            alignment: "Neutral Evil"
+            hp: 7
+            ac: 13
+            speed: 35
+            size: "Medium"
+            initiative: +3
+            proficiency_bonus: 2
+
+            ability_scores:
+              STR: { score: 10, modifier: +0 }
+              DEX: { score: 16, modifier: +3 }
+              CON: { score: 12, modifier: +1 }
+              INT: { score: 12, modifier: +1 }
+              WIS: { score: 13, modifier: +1 }
+              CHA: { score: 10, modifier: +0 }
+
+            saving_throws:
+              STR: { modifier: +0, proficient: false }
+              DEX: { modifier: +5, proficient: true }
+              CON: { modifier: +1, proficient: false }
+              INT: { modifier: +3, proficient: true }
+              WIS: { modifier: +1, proficient: false }
+              CHA: { modifier: +0, proficient: false }
+
+            skills:
+              Acrobatics:      { modifier: +5, proficient: true }
+              Athletics:       { modifier: +0, proficient: false }
+              Deception:       { modifier: +2, proficient: true }
+              Insight:         { modifier: +1, proficient: false }
+              Intimidation:    { modifier: +0, proficient: false }
+              Investigation:   { modifier: +3, proficient: true }
+              Perception:      { modifier: +3, proficient: true }
+              Persuasion:      { modifier: +0, proficient: false }
+              Sleight_of_Hand: { modifier: +5, proficient: true }
+              Stealth:         { modifier: +7, proficient: true, expertise: true }
+              Survival:        { modifier: +1, proficient: false }
+
+            passive_perception: 13
+
+            attack_bonus: 4
+            damage_dice: "1d6+2"
+            attacks:
+              - name: "Shortsword"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "5 ft. melee"
+              - name: "Hand Crossbow"
+                attack_bonus: +5
+                damage: "1d6+3"
+                damage_type: "piercing"
+                range: "30/120 ft."
+
+            abilities:
+              - name: "Sneak Attack"
+                description: "Once per turn, deal an extra 1d6 damage when attacking with advantage or when an ally is adjacent to the target."
+              - name: "Cunning Action"
+                description: "Bonus action to Dash, Disengage, or Hide."
+              - name: "Darkvision"
+                description: "Can see in dim light within 60 ft. as bright light, and in darkness as dim light."
+              - name: "Fey Ancestry"
+                description: "Advantage on saving throws against being charmed. Cannot be put to sleep by magic."
+              - name: "Keen Senses"
+                description: "Proficiency in Perception."
+
+            damage_type: "piercing"
+            loot: ["shortsword", "5 silver pieces"]
+            description: "A lean elf in dark leather, caught off-guard."
+    items:
+      - "ledger (Brotherhood contracts)"
+      - "map (Svengard, Hodenfort, unknown third location)"
+      - "sealed letter (Varek's orders)"
+      - "40 gold pieces (hidden compartment)"
+      - "vial of black liquid (unidentified poison)"
+      - "stolen goods (misc, sellable for ~25gp)"
+    npcs: []

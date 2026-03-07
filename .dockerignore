@@ -1,0 +1,23 @@
+.git/
+.claude/
+.venv/
+venv/
+env/
+
+# Never bake secrets into the image
+**/.env
+
+# Python bytecode
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+
+# Test/cache artefacts
+**/.pytest_cache/
+**/*.tmp.*
+
+# Build artefacts
+dist/
+build/
+**/*.egg-info/
